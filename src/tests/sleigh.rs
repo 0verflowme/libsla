@@ -45,6 +45,32 @@ pub fn addr_space_type() -> Result<()> {
 }
 
 #[test]
+fn user_op_names_are_the_language_table() -> Result<()> {
+    let sleigh = GhidraSleigh::builder()
+        .processor_spec(PROCESSOR_SPEC)?
+        .build(SLEIGH_SPEC)?;
+
+    let names = sleigh.user_op_names();
+    assert!(
+        !names.is_empty(),
+        "x86-64 declares user-defined operations, so the table cannot be empty"
+    );
+
+    // A name the x86 specification declares with `define pcodeop`. Looking it
+    // up by index and getting the same answer is the property a CALLOTHER
+    // consumer depends on: the index it carries means nothing until it is
+    // resolved through this list.
+    let index = names
+        .iter()
+        .position(|name| name == "aesenc")
+        .expect("x86-64 declares the aesenc user operation");
+    assert_eq!(sleigh.user_op_name(index).as_deref(), Some("aesenc"));
+
+    assert_eq!(sleigh.user_op_name(names.len()), None);
+    Ok(())
+}
+
+#[test]
 fn build_sla() -> Result<()> {
     // Confirm the original spec builds successfully
     let sleigh = GhidraSleigh::builder()
@@ -144,6 +170,23 @@ fn test_pcode() -> Result<()> {
         offset += response.origin.size as u64;
     }
     assert_eq!(offset, 15, "Expected 15 bytes to be decoded");
+    Ok(())
+}
+
+#[test]
+fn clear_cache_reloads_bytes_at_a_reused_address() -> Result<()> {
+    let mut sleigh = GhidraSleigh::builder()
+        .processor_spec(PROCESSOR_SPEC)?
+        .build(SLEIGH_SPEC)?;
+    let address = Address::new(sleigh.default_code_space(), 0);
+    let al =
+        sleigh.disassemble_native(&InstructionBytes::new(vec![0x88, 0xd8]), address.clone())?;
+
+    sleigh.clear_cache()?;
+
+    let ah = sleigh.disassemble_native(&InstructionBytes::new(vec![0x88, 0xdc]), address)?;
+    assert_eq!(al.instruction.body, "AL,BL");
+    assert_eq!(ah.instruction.body, "AH,BL");
     Ok(())
 }
 
