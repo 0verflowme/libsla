@@ -20,6 +20,6 @@ flate2 = "1.1"
 sleigh-config = { version = "1", features = ["x86"] }
 serde_json = { version = "1.0.145" }
 
-# The in-place varnode accessors (0verflowme/libsla-sys#1) until a libsla-sys release has them.
+# The in-place varnode accessors (0verflowme/libsla-sys#1, merged) until a libsla-sys release has them.
 [patch.crates-io]
-libsla-sys = { git = "https://github.com/0verflowme/libsla-sys", branch = "varnode-in-place" }
+libsla-sys = { git = "https://github.com/0verflowme/libsla-sys", branch = "main" }
