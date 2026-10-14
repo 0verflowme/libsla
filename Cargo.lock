@@ -209,9 +209,8 @@ dependencies = [
 
 [[package]]
 name = "libsla-sys"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d336878d48818bcfb2047fe5c3ee3af18e39cbc2d08a6fcb6213801ff81d8e57"
+version = "0.1.5"
+source = "git+https://github.com/0verflowme/libsla-sys?branch=varnode-in-place#6b7c673e020f9fad9209f64a4d99830a4114e38d"
 dependencies = [
  "cxx",
  "cxx-build",
