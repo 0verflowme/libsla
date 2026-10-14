@@ -239,7 +239,7 @@ dependencies = [
 [[package]]
 name = "libsla-sys"
 version = "0.1.5"
-source = "git+https://github.com/0verflowme/libsla-sys?branch=main#44982342b87de64a52030ed7940ca505ee87d642"
+source = "git+https://github.com/0verflowme/libsla-sys?branch=main#0919334f7afe76aca09643f33f2a992e7048a7f4"
 dependencies = [
  "cc",
  "cxx",
