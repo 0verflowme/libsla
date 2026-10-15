@@ -21,8 +21,9 @@ sleigh-config = { version = "1", features = ["x86", "ARM"] }
 serde_json = { version = "1.0.145" }
 
 # The in-place varnode accessors (0verflowme/libsla-sys#1, merged) until a libsla-sys release has them.
-# `context_targets` until 0verflowme/libsla-sys#6 merges; then back to `main`.
+# Ghidra 918acd744d and `context_targets` until 0verflowme/libsla-sys#6 merges; then back to `main`.
 [patch.crates-io]
 libsla-sys = { git = "https://github.com/0verflowme/libsla-sys", branch = "context-targets" }
-# The spec compiler the tests run reads libsla-sys's Ghidra headers (0verflowme/sleigh-compiler#1).
-sleigh-compiler = { git = "https://github.com/0verflowme/sleigh-compiler", branch = "main" }
+# The spec compiler the tests run reads libsla-sys's Ghidra headers (0verflowme/sleigh-compiler#1),
+# on 918acd744d until 0verflowme/sleigh-compiler#2 merges.
+sleigh-compiler = { git = "https://github.com/0verflowme/sleigh-compiler", branch = "ghidra-918acd744d" }

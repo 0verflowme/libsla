@@ -239,7 +239,7 @@ dependencies = [
 [[package]]
 name = "libsla-sys"
 version = "0.1.5"
-source = "git+https://github.com/0verflowme/libsla-sys?branch=context-targets#a1c74edba7f28e9cf1ae7c5935f25c439528dcea"
+source = "git+https://github.com/0verflowme/libsla-sys?branch=context-targets#4e3d9ac5437e372aa3df29966a0339fc11b97862"
 dependencies = [
  "cc",
  "cxx",
@@ -359,7 +359,7 @@ checksum = "3a219298ac11a56ea9a6d2120044824d6f01aeb034955e7af7bc16858527deea"
 [[package]]
 name = "sleigh-compiler"
 version = "2.0.2"
-source = "git+https://github.com/0verflowme/sleigh-compiler?branch=main#4e380af4bf508837dc63327de6cddbac2c59615c"
+source = "git+https://github.com/0verflowme/sleigh-compiler?branch=ghidra-918acd744d#918bc31471986131dd773e5e441d1aa93c4e6596"
 dependencies = [
  "cxx",
  "cxx-build",
