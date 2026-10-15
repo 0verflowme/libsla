@@ -423,3 +423,33 @@ fn verify_sleigh(sleigh: GhidraSleigh) {
     assert_eq!(instruction.mnemonic, "PUSH");
     assert_eq!(instruction.body, "RBP");
 }
+
+#[test]
+fn a_backward_thumb_blx_leaves_the_run_in_thumb() -> Result<()> {
+    use sleigh_config::processor_arm::{PSPEC_ARMTTHUMB, SLA_ARM8_LE};
+    // `blx` at 0x472 back to ARM code at 0x3c0, then `mov.w lr, #0` and `str r0, [sp, #4]`.
+    let mut image = vec![0; 0x472];
+    image.extend([0xff, 0xf7, 0xa6, 0xef, 0x4f, 0xf0, 0x00, 0x0e, 0x01, 0x90]);
+    let loader = InstructionBytes::new(image);
+    let sleigh = GhidraSleigh::builder()
+        .processor_spec(PSPEC_ARMTTHUMB)?
+        .build(SLA_ARM8_LE)?;
+    let at = |offset| Address::new(sleigh.default_code_space(), offset);
+
+    let blx = sleigh.disassemble_pcode(&loader, at(0x472))?;
+    assert_eq!(blx.origin.size, 4);
+    assert_eq!(blx.context_targets.len(), 1, "{:?}", blx.context_targets);
+    let target = &blx.context_targets[0];
+    assert_eq!(target.address, at(0x3c0));
+    assert!(target.differs(), "{target:?}");
+
+    // The target's ARM stays at the target: the run above it still decodes as Thumb.
+    let mov = sleigh.disassemble_pcode(&loader, at(0x476))?;
+    assert_eq!(mov.origin.size, 4);
+    assert!(mov.context_targets.is_empty(), "{:?}", mov.context_targets);
+    let mov = sleigh.disassemble_native(&loader, at(0x476))?;
+    assert_eq!(mov.instruction.mnemonic, "mov.w", "{mov}");
+    let store = sleigh.disassemble_pcode(&loader, at(0x47a))?;
+    assert_eq!(store.origin.size, 2);
+    Ok(())
+}
