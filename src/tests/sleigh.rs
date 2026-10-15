@@ -453,3 +453,25 @@ fn a_backward_thumb_blx_leaves_the_run_in_thumb() -> Result<()> {
     assert_eq!(store.origin.size, 2);
     Ok(())
 }
+
+#[test]
+fn a_register_list_deeper_than_the_parser_holds_is_refused() -> Result<()> {
+    use sleigh_config::processor_arm::{PSPEC_ARMT, SLA_ARM8_LE};
+    let sleigh = GhidraSleigh::builder()
+        .processor_spec(PSPEC_ARMT)?
+        .build(SLA_ARM8_LE)?;
+    let decoded = |word: u32| {
+        let loader = InstructionBytes::new(word.to_le_bytes().to_vec());
+        let address = Address::new(sleigh.default_code_space(), 0);
+        sleigh
+            .disassemble_pcode(&loader, address)
+            .map(|pcode| pcode.origin.size)
+    };
+    // vldmiavc r6, {s29, ...} with a count of 0x9f words, one constructor per register.
+    assert!(decoded(0x7cd6_ea9f).is_err());
+    // vldmia r0, {s0-s31}; vldmia r0, {d0-d15}; ldm r0, {r0-pc}
+    for word in [0xec90_0a20, 0xec90_0b20, 0xe890_ffff] {
+        assert_eq!(decoded(word)?, 4, "{word:#010x}");
+    }
+    Ok(())
+}
